@@ -247,7 +247,7 @@ app.get("/client-select", async function (req, res) {
     } else {
       var ans = [];
       data.Items.forEach((item) => {
-        if(! item["admin_flag"]){
+        if(! item["admin_flag"]=="1"){
         ans.push(item["name"]);
         }
       });
@@ -388,7 +388,7 @@ app.get("/district-select", function (req, res) {
     } else {
       var ans = [];
       data.Items.forEach((item) => {
-        if(! item["admin_flag"]){
+        if(! item["admin_flag"]=="1"){
           ans.push(item["district"]);
           }
       });
@@ -410,7 +410,7 @@ app.get("/city-select", function (req, res) {
     } else {
       var ans = [];
       data.Items.forEach((item) => {
-        if(! item["admin_flag"]){
+        if(! item["admin_flag"]=="1"){
           ans.push(item["city"]);
           }
       });
@@ -432,7 +432,7 @@ app.get("/location-select", function (req, res) {
     } else {
       var ans = [];
       data.Items.forEach((item) => {
-        if(! item["admin_flag"]){
+        if(! item["admin_flag"]=="1"){
           ans.push(item["location"]);
           }
       });
