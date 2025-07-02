@@ -32,7 +32,7 @@ function Add(props) {
   };
 
   const fetchClients = (value) => {
-    axios.get("https://mitzvah-software-for-smart-air-curtain.onrender.com/client-select").then((res) => {
+    axios.get("http://13.203.214.225:3000/client-select").then((res) => {
       const filteredClients = res.data.filter((name) =>
         name.toLowerCase().includes(value.toLowerCase())
       );
@@ -77,7 +77,7 @@ function Add(props) {
     }
      else {
       axios
-        .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/devicecheck", {
+        .post("http://13.203.214.225:3000/devicecheck", {
           id: macAddress,device_name:device_name
         })
         .then((res) => {
@@ -86,7 +86,7 @@ function Add(props) {
             setFlag(res.data);
           } else {
             axios
-              .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/add-data", formValues)
+              .post("http://13.203.214.225:3000/add-data", formValues)
               .then((res) => {setFlag("Device Added Successfully")})
               .catch((err) => setFlag("Some Error Occured!"));
           }

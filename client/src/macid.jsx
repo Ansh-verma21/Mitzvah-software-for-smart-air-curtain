@@ -7,7 +7,7 @@ function Macid(props){
     props.change(event.target.id, event.target.value);
   }
   useEffect(() => {
-        axios.post("https://mitzvah-software-for-smart-air-curtain.onrender.com/device-select", props).then((res) => {
+        axios.post("http://13.203.214.225:3000/device-select", props).then((res) => {
       setdata(res.data);
     });
   },[]);

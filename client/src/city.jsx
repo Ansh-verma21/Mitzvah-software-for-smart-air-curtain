@@ -8,7 +8,7 @@ function City(props) {
   var ds = props.ds;
   useEffect(() => {
     if (props.login == "Admin" && data != []) {
-    axios.get("https://mitzvah-software-for-smart-air-curtain.onrender.com/city-select").then((res) => {
+    axios.get("http://13.203.214.225:3000/city-select").then((res) => {
       setdata(res.data);
     });
   }

@@ -31,7 +31,7 @@ function Update(props) {
   };
 
   const fetchClients = (value) => {
-    axios.get("https://mitzvah-software-for-smart-air-curtain.onrender.com/client-select").then((res) => {
+    axios.get("http://13.203.214.225:3000/client-select").then((res) => {
       const filteredClients = res.data.filter((name) =>
         name.toLowerCase().includes(value.toLowerCase())
       );
@@ -47,7 +47,7 @@ function Update(props) {
     }
 
     axios
-      .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/devicecheck", {
+      .post("http://13.203.214.225:3000/devicecheck", {
         id: formdata.mac,
       })
       .then((res) => {
@@ -103,7 +103,7 @@ function Update(props) {
       );
     } else {
       axios
-        .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/devicecheck", {
+        .post("http://13.203.214.225:3000/devicecheck", {
           device_name: device_name,
         })
         .then((res) => {
@@ -112,7 +112,7 @@ function Update(props) {
             setFlag(res.data);
           } else {
             axios
-              .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/add-data", formdata)
+              .post("http://13.203.214.225:3000/add-data", formdata)
               .then((res) => {
                 setFlag("Device Updated Successfully");
               })
@@ -121,7 +121,7 @@ function Update(props) {
         });
     }
     // axios
-    //   .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/update-device", { mac, client, city, district, location })
+    //   .post("http://13.203.214.225:3000/update-device", { mac, client, city, district, location })
     //   .then((res) => {
     //     setMessage(res.data.message || "Device updated successfully.");
     //   })

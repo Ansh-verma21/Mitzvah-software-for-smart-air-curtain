@@ -8,7 +8,7 @@ function Location(props) {
   }
   useEffect(() => {
     if (props.login == "Admin" && data != []) {
-    axios.get("https://mitzvah-software-for-smart-air-curtain.onrender.com/location-select").then((res) => {
+    axios.get("http://13.203.214.225:3000/location-select").then((res) => {
       setdata(res.data);
     });
   }

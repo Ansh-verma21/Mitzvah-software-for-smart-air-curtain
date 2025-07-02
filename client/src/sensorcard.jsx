@@ -15,7 +15,7 @@ function SensorCard(props) {
     if (props.login === "Client" || props.login === "Admin") {
       document.getElementById("all").checked = true;
 
-      axios.post("https://mitzvah-software-for-smart-air-curtain.onrender.com/device-select", props).then(async (res) => {
+      axios.post("http://13.203.214.225:3000/device-select", props).then(async (res) => {
         const deviceList = res.data;
         const newStat = [];
         const newStatCpy = [];
@@ -23,9 +23,9 @@ function SensorCard(props) {
         await Promise.all(
           deviceList.map(async (ele) => {
             try {
-              const resu = await axios.post("https://mitzvah-software-for-smart-air-curtain.onrender.com/find", { id_view: ele.uniqueId });
-              const nres = await axios.post("https://mitzvah-software-for-smart-air-curtain.onrender.com/check-emergency", { id: ele.uniqueId });
-              const cres = await axios.post("https://mitzvah-software-for-smart-air-curtain.onrender.com/checki", { id: ele.uniqueId });
+              const resu = await axios.post("http://13.203.214.225:3000/find", { id_view: ele.uniqueId });
+              const nres = await axios.post("http://13.203.214.225:3000/check-emergency", { id: ele.uniqueId });
+              const cres = await axios.post("http://13.203.214.225:3000/checki", { id: ele.uniqueId });
 
               const merged = Object.assign(resu.data[0] || {}, ele, {
                 status: nres.data[0],
@@ -76,14 +76,14 @@ function SensorCard(props) {
     const relayStatus = isChecked ? 0 : 1;
 
     try {
-      await axios.post("https://mitzvah-software-for-smart-air-curtain.onrender.com/change", {
+      await axios.post("http://13.203.214.225:3000/change", {
         id: deviceId,
         st: relayStatus,
       });
 
       event.target.checked = isChecked;
 
-      await axios.post("https://mitzvah-software-for-smart-air-curtain.onrender.com/relayChange", {
+      await axios.post("http://13.203.214.225:3000/relayChange", {
         id: deviceId,
         st: relayStatus,
       });
