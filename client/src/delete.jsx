@@ -38,7 +38,7 @@ function Delete(props) {
     }
 
     axios
-      .post("http://13.203.214.225:3000/devicecheck", {
+      .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/devicecheck", {
         id: formdata.mac,
       })
       .then((res) => {
@@ -58,7 +58,7 @@ function Delete(props) {
   };
   function deleteit() {
     axios
-      .post("http://13.203.214.225:3000/delete-device", {
+      .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/delete-device", {
         id: formdata.mac,
       })
       .then((res) => {

@@ -8,7 +8,7 @@ import { saveAs } from "file-saver";
 
 // Fetch data from API
 const fetchData = async (uniqueId, startDate, endDate) => {
-  const url = new URL(`http://13.203.214.225:3000/items/${uniqueId}`);
+  const url = new URL(`https://mitzvah-software-for-smart-air-curtain.onrender.com/items/${uniqueId}`);
   if (startDate && endDate) {
     url.searchParams.append("startDate", startDate);
     url.searchParams.append("endDate", endDate);
@@ -49,7 +49,7 @@ function DeviceHistory() {
         setHistory(data.items);
 
         // Then fetch the device's info
-        const res = await fetch("http://13.203.214.225:3000/device-select", {
+        const res = await fetch("https://mitzvah-software-for-smart-air-curtain.onrender.com/device-select", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ dname: id })

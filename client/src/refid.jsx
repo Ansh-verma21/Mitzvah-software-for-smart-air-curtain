@@ -6,7 +6,7 @@ function Refid(props) {
       props.change(event.target.id, event.target.value);
     }
     useEffect(() => {
-          axios.post("http://13.203.214.225:3000/device-select", props).then((res) => {
+          axios.post("https://mitzvah-software-for-smart-air-curtain.onrender.com/device-select", props).then((res) => {
         res.data.sort((a,b)=>{b['device-name'].localeCompare(a['device-name'])})
         setdata(res.data);
       });
