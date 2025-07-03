@@ -1026,7 +1026,7 @@ app.post("/checki",async(req,res)=>{
   // Get the current timestamp in milliseconds
   const currentTimestampMs = Date.now();
   // console.log(currentTimestampMs,rsp["DST"],rsp)
-  if(currentTimestampMs-rsp["Item"]["current_dt"]<6000){
+  if(currentTimestampMs-rsp["Item"]["current_dt"]<10000){
     res.send(["ON",rsp["Item"]["Status"]])
   }
   else{
