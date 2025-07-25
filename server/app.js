@@ -503,32 +503,67 @@ import { v4 as uuidv4 } from "uuid";
 //   }
 // });
 
-app.post("/add-data", async (req, res) => {//adding new client device
+// /add-data API
+app.post("/add-data", async (req, res) => {
+  const {
+    macAddress,
+    client,
+    device_name,
+    district,
+    city,
+    location,
+    sector,
+    state,
+    pincode
+  } = req.body;
 
-  var dynamoDB = DynamoDBDocument.from(
-    new DynamoDB({
-      region: aws_region,
-      credentials: {
-        accessKeyId: my_AWSAccessKeyId,
-        secretAccessKey: my_AWSSecretKey,
+  // Validate only required fields
+  if (!macAddress || !device_name || !client) {
+    return res.status(400).send("Missing required fields");
+  }
+
+  try {
+    // Build the item with required and optional fields
+    const item = {
+      uniqueId: macAddress,
+      client_select: client,
+      "device-name": device_name,
+    };
+
+    if (district) item.district = district;
+    if (city) item.city = city;
+    if (location) item.location = location;
+    if (sector) item.sector = sector;
+    if (state) item.state = state;
+    if (pincode) item.pin = pincode;
+
+    // Put to empTable3
+    const commandEmpTable3 = new PutCommand({
+      TableName: empTable3,
+      Item: item,
+    });
+
+    // Put to empTable1
+    const commandEmpTable1 = new PutCommand({
+      TableName: empTable1,
+      Item: {
+        uniqueId: macAddress,
+        Status: 0,
+        timestamp: new Date().toISOString(),
       },
-    })
-  );
-  const command = new PutCommand( {
-    TableName: empTable3,
-    Item: {
-      uniqueId:req.body.macAddress,
-      client_select:req.body.client,
-      "device-name":req.body.device_name,
-      "wifi_name":req.body.wifi_name,
-      "wifi_password":req.body.wifi_pass,
-      "timestamp": new Date().toISOString(),
-    },
-  });
+    });
 
-  const response = await dynamoDB.send(command);
-  res.send("Done")
+    await dynamoDB.send(commandEmpTable3);
+    await dynamoDB.send(commandEmpTable1);
+
+    res.status(200).send("Device added to both tables successfully");
+  } catch (error) {
+    console.error("Error adding device:", error);
+    res.status(500).send("Failed to add device");
+  }
 });
+
+
 
 
 app.post("/get-name", async (req, res) => {
@@ -574,27 +609,35 @@ else{
   })
 }
 });
-app.post("/add2",async(req,res)=>{
-  // console.log(req.body);
-  const command = new PutCommand( {
+app.post("/add2", async (req, res) => {
+  const { username, password, login, name } = req.body;
+
+  if (!username || !password || !login) {
+    return res.status(400).send("Missing required fields");
+  }
+
+  const isClient = login === "Client";
+
+  const command = new PutCommand({
     TableName: empTable2,
     Item: {
-      username:req.body.username,
-      password:req.body.password,
-      name:req.body.login=="Client"?req.body.name:"",
-      "admin_flag":req.body.login=="0"?"1":"0",
-      district:req.body.login=="Client"?req.body.district:"",
-      city:req.body.login=="Client"?req.body.city:"",
-      location:req.body.login=="Client"?req.body.location:"",
-      pincode:req.body.login=="Client"?req.body.pincode:"",
-      sector:req.body.login=="Client"?req.body.sector:"",
-      state:req.body.login=="Client"?req.body.state:"",
+      username,
+      password,
+      login, // Storing "Client" or "Admin"
+      admin_flag: login === "0" ? "1" : "0", // optional: depends how you use this
+      name: isClient ? name || "" : "",
     },
   });
 
-  const response = await dynamoDB.send(command);
-  res.send("Done");
-})
+  try {
+    await dynamoDB.send(command);
+    res.status(200).send("Done");
+  } catch (err) {
+    console.error("Error adding user:", err);
+    res.status(500).send("Failed to add user");
+  }
+});
+
 app.get("/client-select", async function (req, res) {
   var params = {
     TableName: empTable2,
@@ -1046,35 +1089,52 @@ app.post("/delete-client",async(req,res)=>{
   const response = await dynamoDB.send(command);
   res.send("ok")
 })
-app.post("/delete-device",async(req,res)=>{
-  const params={
-    TableName:empTable3,
+app.post("/delete-device", async (req, res) => {
+  const uniqueId = req.body.id;
+
+  if (!uniqueId) {
+    return res.status(400).send("Missing device ID");
   }
-  var ans=[];
-  await dynamoDB.scan(params, (err, data) => {
-    if (err) {
-      console.error(
-        "Unable to scan the table. Error JSON:",
-        JSON.stringify(err, null, 2)
-      );
-    } else {
-      ans=data.Items.filter((item) => {
-        return(item["uniqueId"]==req.body.id);
-      });
-      if(ans[0]){
-        // console.log(ans[0])
-      const command = new DeleteCommand( {
-        TableName: empTable3,
-        Key: {
-          uniqueId:req.body.id,
-        },
-      });
-      const response = dynamoDB.send(command);
-      res.send("ok")
+
+  try {
+    // Optional: check if device exists in empTable3 before deleting
+    const scanResult = await dynamoDB.send(new ScanCommand({
+      TableName: empTable3,
+      FilterExpression: "uniqueId = :uid",
+      ExpressionAttributeValues: {
+        ":uid": uniqueId,
+      },
+    }));
+
+    if (!scanResult.Items || scanResult.Items.length === 0) {
+      return res.status(404).send("Device not found");
     }
-    }
-  });
-})
+
+    // Delete from empTable3
+    const deleteFromEmpTable3 = new DeleteCommand({
+      TableName: empTable3,
+      Key: { uniqueId },
+    });
+
+    // Delete from empTable1
+    const deleteFromEmpTable1 = new DeleteCommand({
+      TableName: empTable1,
+      Key: { uniqueId },
+    });
+
+    // Perform both deletions
+    await Promise.all([
+      dynamoDB.send(deleteFromEmpTable3),
+      dynamoDB.send(deleteFromEmpTable1),
+    ]);
+
+    res.status(200).send("Device deleted from both tables successfully");
+  } catch (error) {
+    console.error("Error deleting device:", error);
+    res.status(500).send("Failed to delete device");
+  }
+});
+
 // Function to describe a Thing and check its connectivity status
 app.listen(port, () => {
   console.log("listening on port");
