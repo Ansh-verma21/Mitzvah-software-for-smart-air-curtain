@@ -15,7 +15,7 @@ function Location(props) {
       data.length === 0
     ) {
       axios
-        .post("http://localhost:3000/location-select", { client: props.cs })
+        .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/location-select", { client: props.cs })
         .then((res) => {
           setdata(res.data);
         });

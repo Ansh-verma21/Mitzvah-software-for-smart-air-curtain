@@ -15,7 +15,7 @@ function City(props) {
       data.length === 0
     ) {
       axios
-        .post("http://localhost:3000/city-select", { client: props.cs })
+        .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/city-select", { client: props.cs })
         .then((res) => {
           setdata(res.data);
         });

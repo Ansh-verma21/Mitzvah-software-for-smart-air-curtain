@@ -15,7 +15,7 @@ function District(props) {
       data.length === 0
     ) {
       axios
-        .post("http://localhost:3000/district-select", { client: props.cs })
+        .post("https://mitzvah-software-for-smart-air-curtain.onrender.com/district-select", { client: props.cs })
         .then((res) => {
           setdata(res.data);
         });
