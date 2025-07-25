@@ -609,6 +609,7 @@ else{
   })
 }
 });
+
 app.post("/add2", async (req, res) => {
   const { username, password, login, name } = req.body;
 
@@ -818,70 +819,55 @@ app.post("/find", async function (req, res) {
 
 app.get("/district-select", function (req, res) {
   var params = {
-    TableName: empTable2,
+    TableName: empTable3,
   };
   dynamoDB.scan(params, (err, data) => {
     if (err) {
-      console.error(
-        "Unable to scan the table. Error JSON:",
-        JSON.stringify(err, null, 2)
-      );
+      console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
     } else {
-      var ans = [];
+      let ans = new Set();
       data.Items.forEach((item) => {
-        if( item["admin_flag"]=="0"){
-          ans.push(item["district"]);
-          }
+        if (item["district"]) ans.add(item["district"]);
       });
-      ans = new Set(ans);
       res.send(Array.from(ans).sort());
     }
   });
 });
+
 app.get("/city-select", function (req, res) {
   var params = {
-    TableName: empTable2,
+    TableName: empTable3,
   };
   dynamoDB.scan(params, (err, data) => {
     if (err) {
-      console.error(
-        "Unable to scan the table. Error JSON:",
-        JSON.stringify(err, null, 2)
-      );
+      console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
     } else {
-      var ans = [];
+      let ans = new Set();
       data.Items.forEach((item) => {
-        if( item["admin_flag"]=="0"){
-          ans.push(item["city"]);
-          }
+        if (item["city"]) ans.add(item["city"]);
       });
-      ans = new Set(ans);
       res.send(Array.from(ans).sort());
     }
   });
 });
+
 app.get("/location-select", function (req, res) {
   var params = {
-    TableName: empTable2,
+    TableName: empTable3,
   };
   dynamoDB.scan(params, (err, data) => {
     if (err) {
-      console.error(
-        "Unable to scan the table. Error JSON:",
-        JSON.stringify(err, null, 2)
-      );
+      console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
     } else {
-      var ans = [];
+      let ans = new Set();
       data.Items.forEach((item) => {
-        if(item["admin_flag"]=="0"){
-          ans.push(item["location"]);
-          }
+        if (item["location"]) ans.add(item["location"]);
       });
-      ans = new Set(ans);
       res.send(Array.from(ans).sort());
     }
   });
 });
+
 app.get("/state-select", function (req, res) {
   var params = {
     TableName: empTable2,
