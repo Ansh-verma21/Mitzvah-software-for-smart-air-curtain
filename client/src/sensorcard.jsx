@@ -31,7 +31,7 @@ function SensorCard(props) {
                 status: nres.data[0],
                 fanstatus: nres.data[1],
                 enum: nres.data.emergency,
-                connectionInfo: cres.data[0] // ✅ store connection info ("OFF" = online)
+                connectionInfo: cres.data[0]
               });
 
               newStat.push({ [ele.uniqueId]: [merged] });
@@ -49,7 +49,7 @@ function SensorCard(props) {
   }, [props]);
 
   function checkOnline(device) {
-    return device?.connectionInfo === "OFF" && device?.Status === 1;
+    return device?.connectionInfo === "ON" && device?.Status === 1;
   }
 
   function filterit(event) {
@@ -141,8 +141,23 @@ function SensorCard(props) {
           </div>
         </div>
 
-        <div style={{ overflowX: "auto" }}>
-          <table className="table table-striped table-hover tableeee" style={{ minWidth: "1200px" }}>
+        {/* ✅ Scrollable container for table */}
+        <div
+          style={{
+            overflowX: "auto",
+            overflowY: "hidden",
+            maxWidth: "100%",
+            paddingBottom: "10px", // Ensures scrollbar stays visible above footer
+            marginBottom: "30px",  // Adds space so scrollbar doesn't get hidden
+          }}
+        >
+          <table
+            className="table table-striped table-hover tableeee"
+            style={{
+              minWidth: "1500px",  // Force horizontal scroll if screen smaller
+              width: "1500px",
+            }}
+          >
             <thead>
               <tr style={{ fontSize: "16px", fontFamily: "sans-serif" }}>
                 <th style={{ textAlign: "center" }}><u>SNo.</u></th>

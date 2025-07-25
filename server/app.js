@@ -724,87 +724,49 @@ app.post("/check-emergency", async (req, res) => {
 
 
 app.post("/device-select", async function (req, res) {
-  let ans = [];
-  let new_ans = [];
+  const {
+    cs,      // client_select
+    ds,      // district
+    cis,     // city
+    ls,      // location
+    dname,   // device-name
+    refname  // uniqueId
+  } = req.body;
+
+  const params = {
+    TableName: empTable3,
+  };
 
   try {
-    // First scan
-    var params = {
-      TableName: empTable2,
-    };
-
-    const data1 = await new Promise((resolve, reject) => {
+    const data = await new Promise((resolve, reject) => {
       dynamoDB.scan(params, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
+        if (err) reject(err);
+        else resolve(data);
       });
     });
 
-    data1.Items.forEach((item) => {
-      if (
-        (!req.body.cs || (req.body.cs && req.body.cs == item["name"])) &&
-        (!req.body.ds || (req.body.ds && req.body.ds == item["district"])) &&
-        (!req.body.cis || (req.body.cis && req.body.cis == item["city"])) &&
-        (!req.body.ls || (req.body.ls && req.body.ls == item["location"]))&&
-        (!req.body.ss || (req.body.ss && req.body.ss == item["state"]))&&
-        (!req.body.pin || (req.body.pin && req.body.pin == item["pincode"]))&&
-        (!req.body.sec || (req.body.sec && req.body.sec == item["sector"]))
-      ) {
-        // console.log(item, "hi");
-        ans.push(item);
-      }
+    const filtered = data.Items.filter(item => {
+      return (
+        (!cs || item.client_select === cs) &&
+        (!ds || item.district === ds) &&
+        (!cis || item.city === cis) &&
+        (!ls || item.location === ls) &&
+        (!dname || item.uniqueId=== dname) &&
+        (!refname || item["device-name"] === refname)
+      );
     });
 
-    // console.log(ans, 123, req.body);
-
-    // Second scan
-    params = {
-      TableName: empTable3,
-    };
-
-    const data2 = await new Promise((resolve, reject) => {
-      dynamoDB.scan(params, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
+    filtered.sort((a, b) => {
+      return new Intl.Collator().compare(a["device-name"], b["device-name"]);
     });
 
-    data2.Items.forEach((item) => {
-      ans.forEach((ansItem) => {
-        if (
-          item["client_select"] == ansItem["name"] &&
-          (!req.body.dname ||
-            (req.body.dname && req.body.dname == item["uniqueId"])) &&
-          (!req.body.refname ||
-            (req.body.refname && req.body.refname == item["device-name"]))
-        ) {
-          // console.log("Yes", item);
-          new_ans.push(Object.assign({}, item, ansItem));
-          // console.log("Yes2", new_ans);
-        }
-      });
-    });
-    new_ans.sort((a,b)=>{new Intl.Collator().compare(a["device-name"], b["device-name"])})
-    // console.log(new_ans);
-    res.send(new_ans);
-
+    res.send(filtered);
   } catch (err) {
-    console.error("Error scanning the table. Error JSON:", JSON.stringify(err, null, 2));
-    if (err.code) {
-      console.error(`Error Code: ${err.code}`);
-    }
-    if (err.message) {
-      console.error(`Error Message: ${err.message}`);
-    }
-    res.status(500).send("Error processing request");
+    console.error("Error in /device-select:", err);
+    res.status(500).send("Error filtering device data.");
   }
 });
+
 app.post("/find", async function (req, res) {
   var result = [];
   if (req.body.id_view) {
