@@ -9,25 +9,29 @@ function Location(props) {
   }
 
   useEffect(() => {
-    if ((props.login === "Admin" || props.login === "Client") && data.length === 0) {
-      axios.get("https://mitzvah-software-for-smart-air-curtain.onrender.com/location-select").then((res) => {
-        setdata(res.data);
-      });
+    if (
+      (props.login === "Admin" || props.login === "Client") &&
+      props.cs !== "" &&
+      data.length === 0
+    ) {
+      axios
+        .post("http://localhost:3000/location-select", { client: props.cs })
+        .then((res) => {
+          setdata(res.data);
+        });
     }
-  }, [props.login]);
+  }, [props.login, props.cs]);
 
   return (
     <select id="location-select" value={props.ls} onChange={callit}>
       <option id="4" value="">
         Select Location
       </option>
-      {data.map((ele) => {
-        return (
-          <option key={ele} id={ele} value={ele}>
-            {ele}
-          </option>
-        );
-      })}
+      {data.map((ele) => (
+        <option key={ele} id={ele} value={ele}>
+          {ele}
+        </option>
+      ))}
     </select>
   );
 }

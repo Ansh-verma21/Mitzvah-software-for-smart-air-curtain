@@ -9,19 +9,21 @@ function City(props) {
   }
 
   useEffect(() => {
-    if ((props.login === "Admin" || props.login === "Client") && data.length === 0) {
-      axios.get("https://mitzvah-software-for-smart-air-curtain.onrender.com/city-select").then((res) => {
-        setdata(res.data);
-      });
+    if (
+      (props.login === "Admin" || props.login === "Client") &&
+      props.cs !== "" &&
+      data.length === 0
+    ) {
+      axios
+        .post("http://localhost:3000/city-select", { client: props.cs })
+        .then((res) => {
+          setdata(res.data);
+        });
     }
-  }, [props.login]);
+  }, [props.login, props.cs]);
 
   return (
-    <select
-      id="city-select"
-      onChange={callit}
-      value={props.cis}
-    >
+    <select id="city-select" onChange={callit} value={props.cis}>
       <option id="3" value="">
         Select City
       </option>
