@@ -779,56 +779,86 @@ app.post("/find", async function (req, res) {
   res.send(r);
 });
 
-app.get("/district-select", function (req, res) {
-  var params = {
-    TableName: empTable3,
-  };
+app.post("/district-select", function (req, res) {
+  const { client_select } = req.body;
+
+  const params = { TableName: empTable3 };
+
   dynamoDB.scan(params, (err, data) => {
     if (err) {
-      console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+      console.error("Unable to scan:", err);
+      res.status(500).send("Error");
     } else {
-      let ans = new Set();
-      data.Items.forEach((item) => {
-        if (item["district"]) ans.add(item["district"]);
+      const districts = new Set();
+
+      data.Items.forEach(item => {
+        if (
+          item.district &&
+          (!client_select || item.client_select === client_select)
+        ) {
+          districts.add(item.district);
+        }
       });
-      res.send(Array.from(ans).sort());
+
+      res.send(Array.from(districts).sort());
     }
   });
 });
 
-app.get("/city-select", function (req, res) {
-  var params = {
-    TableName: empTable3,
-  };
+
+app.post("/city-select", function (req, res) {
+  const { client_select } = req.body;
+
+  const params = { TableName: empTable3 };
+
   dynamoDB.scan(params, (err, data) => {
     if (err) {
-      console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+      console.error("Unable to scan:", err);
+      res.status(500).send("Error");
     } else {
-      let ans = new Set();
-      data.Items.forEach((item) => {
-        if (item["city"]) ans.add(item["city"]);
+      const cities = new Set();
+
+      data.Items.forEach(item => {
+        if (
+          item.city &&
+          (!client_select || item.client_select === client_select)
+        ) {
+          cities.add(item.city);
+        }
       });
-      res.send(Array.from(ans).sort());
+
+      res.send(Array.from(cities).sort());
     }
   });
 });
 
-app.get("/location-select", function (req, res) {
-  var params = {
-    TableName: empTable3,
-  };
+
+app.post("/location-select", function (req, res) {
+  const { client_select } = req.body;
+
+  const params = { TableName: empTable3 };
+
   dynamoDB.scan(params, (err, data) => {
     if (err) {
-      console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+      console.error("Unable to scan:", err);
+      res.status(500).send("Error");
     } else {
-      let ans = new Set();
-      data.Items.forEach((item) => {
-        if (item["location"]) ans.add(item["location"]);
+      const locations = new Set();
+
+      data.Items.forEach(item => {
+        if (
+          item.location &&
+          (!client_select || item.client_select === client_select)
+        ) {
+          locations.add(item.location);
+        }
       });
-      res.send(Array.from(ans).sort());
+
+      res.send(Array.from(locations).sort());
     }
   });
 });
+;
 
 app.get("/state-select", function (req, res) {
   var params = {
